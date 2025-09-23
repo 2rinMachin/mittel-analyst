@@ -48,8 +48,10 @@ def upload_json_rows(rows: list[Any], key: str):
 
 
 def main():
-    print("Uploading events...")
+    print("Fetching events...")
     events = fetch_all_events()
+
+    print("Uploading events...")
     upload_json_rows(events, "events.json")
 
     print("Data uploaded successfully.")
