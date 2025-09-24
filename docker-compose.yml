@@ -1,0 +1,5 @@
+services:
+  ingesta_3:
+    image: "mittel/ingesta-3"
+    env_file: "./ingesta_3.env"
+    tty: true
