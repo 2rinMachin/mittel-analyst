@@ -52,7 +52,7 @@ def main():
     events = fetch_all_events()
 
     print("Uploading events...")
-    upload_json_rows(events, "events.json")
+    upload_json_rows(events, "engagement/events/events.json")
 
     print("Data uploaded successfully.")
 
