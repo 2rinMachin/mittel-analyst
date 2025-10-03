@@ -1,6 +1,13 @@
 services:
+  ingesta_1:
+    image: "grazen/mittel-ingesta-1"
+    env_file: "./ingesta_1.env"
+    tty: true
+    volumes:
+      - "~/.aws/credentials:/root/.aws/credentials"
+
   ingesta_3:
-    image: "592582443043.dkr.ecr.us-east-1.amazonaws.com/mittel/ingesta-3"
+    image: "grazen/mittel-ingesta-3"
     env_file: "./ingesta_3.env"
     tty: true
     volumes:
