@@ -35,7 +35,6 @@ def fetch_all_devices(cursor: MySQLCursorAbstract):
 
 def upload_json_rows(client: S3Client, rows: list[RowType | dict[str, RowItemType]], key: str): 
     body = "\n".join(json.dumps(r,default=serializer) for r in rows)
-    print(body)
 
     _ = client.put_object(
         Bucket=S3_BUCKET,
@@ -46,7 +45,7 @@ def upload_json_rows(client: S3Client, rows: list[RowType | dict[str, RowItemTyp
 
 
 def main():
-    print("Fetching events...")
+    print("Fetching data...")
 
     with connect(
         host=DB_HOST,
@@ -59,7 +58,7 @@ def main():
             events = fetch_all_events(cursor)
             devices = fetch_all_devices(cursor)
 
-    print("Uploading events...")
+    print("Uploading data...")
 
     client: S3Client = boto3.client("s3")  # pyright: ignore[reportUnknownMemberType]
     upload_json_rows(client, events, "engagement/events/events.json")
