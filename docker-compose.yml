@@ -6,6 +6,13 @@ services:
     volumes:
       - "~/.aws/credentials:/root/.aws/credentials"
 
+  ingesta_2:
+    image: "grazen/mittel-ingesta-2"
+    env_file: "./ingesta_2.env"
+    tty: true
+    volumes:
+      - "~/.aws/credentials:/root/.aws/credentials"
+
   ingesta_3:
     image: "grazen/mittel-ingesta-3"
     env_file: "./ingesta_3.env"
