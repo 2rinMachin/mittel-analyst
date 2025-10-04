@@ -1,5 +1,6 @@
 from datetime import datetime
 from mypy_boto3_s3 import S3Client
+from bson import ObjectId
 import os
 import json
 from pymongo import MongoClient
@@ -13,6 +14,9 @@ S3_BUCKET = os.environ["S3_BUCKET"]
 def serializer(obj: object):
     if isinstance(obj, datetime):
         return obj.strftime("%Y-%m-%d %H:%M:%S")
+
+    if isinstance(obj, ObjectId):
+        return str(obj)
 
     raise TypeError(f"Type {type(obj)} is not serializable")
 
