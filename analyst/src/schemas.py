@@ -1,19 +1,91 @@
 import enum
-from pydantic import BaseModel, EmailStr 
+from pydantic import BaseModel
 from datetime import datetime
 
-class EventKind(enum.Enum):
-    view = "view"
-    like = "like"
-    share = "share"
+class TopTagsResponse(BaseModel):
+    tag: str
 
-class Event(BaseModel):
-    id: int
-    user_id: str | None
+class TopArticlesResponse(BaseModel):
+    article_id: str
+    author_id: str
+    username: str
+    title: str
+    views: int
+    likes: int
+    shares: int
+    comments: int
+
+class ActiveUsersResponse(BaseModel):
+    user_id: str
+    email: str
+    username: str
+    expiration_time: datetime
+
+class UserCount(BaseModel):
+    user_count: int
+
+class TopUsersResponse(BaseModel):
+    user_id: str
+    email: str
+    username: str
+    views_received: int
+    likes_received: int
+    shares_received: int
+    comments_received: int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+class PostSummary(BaseModel):
     post_id: str
-    kind: EventKind
-    timestamp: datetime
+    title: str
+    author_id: str
+    author_username: str
+    views: int
+    likes: int
+    shares: int
+    comments: int
 
+class CategorySummary(BaseModel):
+    category: str
+    category_views: int
+    category_likes: int
+    category_shares: int
+    category_comments: int
+
+class UserArticlesSummary(BaseModel):
+    user_id: str
+    username: str
+    views_received: int
+    likes_received: int
+    shares_received: int
+    comments_received: int
+
+class UserActivitySummary(BaseModel):
+    user_id: str
+    username: str
+    views_made: int
+    likes_made: int
+    shares_made: int
+    comments_made: int
+"""
+
+"""
 class Post(BaseModel):
     title: str
     description: str
@@ -78,3 +150,4 @@ class User(BaseModel):
     username: str
     password: str
     email: EmailStr
+"""
