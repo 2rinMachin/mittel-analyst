@@ -6,7 +6,7 @@ import boto3
 import os
 
 GLUE_DATABASE = os.getenv("GLUE_DATABASE") or "data-analysis-database"
-S3_BUCKET = os.getenv("S3_BUCKET") or "mittel-data-analysis-bucket"
+S3_BUCKET = os.getenv("S3_BUCKET") or "mittel-analyst-bucket"
 OUTPUT_LOCATION = f"s3://{S3_BUCKET}/query-results"
 REGION = os.getenv("AWS_REGION") or "us-east-1"
 
