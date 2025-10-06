@@ -52,27 +52,47 @@ async def status_check():
 async def get_top_tags():
     rows = athena_execute("""
     SELECT q.tag AS tag FROM (
-SELECT t.tag AS tag, SUM(p.score) AS total_trending_score
-FROM post_scores p CROSS JOIN UNNEST(p.tags) AS t(tag) GROUP BY t.tag
-) q ORDER BY q.total_trending_score DESC LIMIT 10;
-""")
+            SELECT
+                t.tag AS tag,
+                SUM(p.score) AS total_trending_score
+            FROM post_scores p
+                CROSS JOIN UNNEST(p.tags) AS t(tag)
+            GROUP BY t.tag
+        ) q
+    ORDER BY q.total_trending_score DESC
+    LIMIT 10;
+    """)
     return [TopTagsResponse(tag=row["tag"]) for row in rows]
 
 @app.get("/tags/topavg", response_model=List[TopTagsResponse])
 async def get_top_avg_tags():
     rows = athena_execute("""
-    SELECT q.tag AS tag FROM (
-SELECT t.tag AS tag, AVG(p.score) AS avg_trending_score
-FROM post_scores p CROSS JOIN UNNEST(p.tags) AS t(tag) GROUP BY t.tag
-) q ORDER BY q.avg_trending_score DESC LIMIT 10;
-""")
+    SELECT q.tag AS tag
+    FROM (
+            SELECT
+                t.tag AS tag,
+                AVG(p.score) AS avg_trending_score
+            FROM post_scores p
+                CROSS JOIN UNNEST(p.tags) AS t(tag)
+            GROUP BY t.tag
+        ) q
+    ORDER BY q.avg_trending_score DESC
+    LIMIT 10;
+    """)
     return [TopTagsResponse(tag=row["tag"]) for row in rows]
 
 @app.get("/articles/top")
 async def get_top_articles():
     rows = athena_execute("""
-    SELECT p.post_id AS article_id, p.author_id AS author_id, u.username AS username, p.title AS title, p.views AS views, p.likes AS likes, p.shares AS shares, p.comments AS comments
-FROM post_scores p LEFT JOIN users u ON u.id = p.author_id ORDER BY p.score DESC;
+    SELECT
+        p.post_id AS article_id,
+        p.author_id AS author_id,
+        u.username AS username,
+        p.title AS title
+    FROM post_scores p
+        LEFT JOIN users u ON u.id = p.author_id
+    ORDER BY p.score DESC
+    LIMIT 10;
 """)
     return [TopArticlesResponse(
         article_id=row["article_id"],
@@ -111,17 +131,18 @@ async def get_active_users_count():
 async def get_top_users():
     rows = athena_execute("""
     SELECT
-    u.id AS user_id,
-    u.email AS email,
-    u.username AS username,
-    COALESCE(ec.views, 0) AS views_received,
-    COALESCE(ec.likes, 0) AS likes_received,
-    COALESCE(ec.shares, 0) AS shares_received,
-    COALESCE(cc.user_comments_received, 0) AS comments_received
+        u.id AS user_id,
+        u.email AS email,
+        u.username AS username,
+        COALESCE(ec.views, 0) AS views_received,
+        COALESCE(ec.likes, 0) AS likes_received,
+        COALESCE(ec.shares, 0) AS shares_received,
+        COALESCE(cc.user_comments_received, 0) AS comments_received
     FROM users u
-    LEFT JOIN event_counts_author ec ON u.id = ec.user_id
-    LEFT JOIN comment_counts_received cc ON u.id = cc.user_id
-    ORDER BY views_received DESC LIMIT 20;
+        LEFT JOIN event_counts_author ec ON u.id = ec.user_id
+        LEFT JOIN comment_counts_received cc ON u.id = cc.user_id
+    ORDER BY views_received DESC
+    LIMIT 20;
 """)
     return [TopUsersResponse(
         user_id=row["user_id"],
