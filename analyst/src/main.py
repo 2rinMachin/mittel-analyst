@@ -3,6 +3,7 @@ from typing import List
 from schemas import *
 import time
 import boto3
+from fastapi.middleware.cors import CORSMiddleware
 import os
 
 GLUE_DATABASE = os.getenv("GLUE_DATABASE") or "data-analysis-database"
@@ -11,6 +12,16 @@ OUTPUT_LOCATION = f"s3://{S3_BUCKET}/query-results"
 REGION = os.getenv("AWS_REGION") or "us-east-1"
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 client = boto3.client('athena', region_name=REGION)
 
@@ -51,16 +62,16 @@ async def status_check():
 @app.get("/tags/top", response_model=List[TopTagsResponse])
 async def get_top_tags():
     rows = athena_execute("""
-    SELECT q.tag AS tag FROM (
-            SELECT
-                t.tag AS tag,
-                SUM(p.score) AS total_trending_score
-            FROM post_scores p
-                CROSS JOIN UNNEST(p.tags) AS t(tag)
-            GROUP BY t.tag
-        ) q
-    ORDER BY q.total_trending_score DESC
-    LIMIT 10;
+SELECT q.tag AS tag FROM (
+        SELECT
+            t.tag AS tag,
+            SUM(p.score) AS total_trending_score
+        FROM post_scores p
+            CROSS JOIN UNNEST(p.tags) AS t(tag)
+        GROUP BY t.tag
+    ) q
+ORDER BY q.total_trending_score DESC
+LIMIT 10;
     """)
     return [TopTagsResponse(tag=row["tag"]) for row in rows]
 
