@@ -93,7 +93,8 @@ async def get_top_articles():
         LEFT JOIN users u ON u.id = p.author_id
     ORDER BY p.score DESC
     LIMIT 10;
-""")
+    """)
+
     return [TopArticlesResponse(
         article_id=row["article_id"],
         author_id=row["author_id"],
@@ -108,9 +109,15 @@ async def get_top_articles():
 @app.get("/users/listactive", response_model=List[ActiveUsersResponse])
 async def get_active_users():
     rows = athena_execute("""
-    SELECT u.id as user_id, u.email as email, u.username as username, s.expires_at as expiration_time
-FROM users u JOIN sessions s ON u.id = s.user_id WHERE s.expires_at > now();
-""")
+    SELECT
+        u.id as user_id,
+        u.email as email,
+        u.username as username,
+        s.expires_at as expiration_time
+    FROM users u
+        JOIN sessions s ON u.id = s.user_id
+        WHERE s.expires_at > now();
+    """)
     return [ActiveUsersResponse(
         user_id=row["user_id"],
         email=row["email"],
@@ -121,9 +128,11 @@ FROM users u JOIN sessions s ON u.id = s.user_id WHERE s.expires_at > now();
 @app.get("/users/countactive", response_model=UserCount)
 async def get_active_users_count():
     output = athena_execute("""
-    SELECT COUNT(DISTINCT s.user_id) AS user_count FROM sessions s
+    SELECT COUNT(DISTINCT s.user_id) AS user_count
+    FROM sessions s
     WHERE s.expires_at > now();
     """)
+
     count = int(output[0]["user_count"] or 0)
     return UserCount(user_count=count)
 
@@ -143,7 +152,8 @@ async def get_top_users():
         LEFT JOIN comment_counts_received cc ON u.id = cc.user_id
     ORDER BY views_received DESC
     LIMIT 20;
-""")
+    """)
+
     return [TopUsersResponse(
         user_id=row["user_id"],
         email=row["email"],
