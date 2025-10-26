@@ -111,10 +111,6 @@ async def get_top_articles():
         author_id=row["author_id"],
         username=row["username"],
         title=row["title"],
-        views=int(row["views"] or 0),
-        likes=int(row["likes"] or 0),
-        shares=int(row["shares"] or 0),
-        comments=int(row["comments"] or 0)
     ) for row in rows]
 
 @app.get("/users/listactive", response_model=List[ActiveUsersResponse])

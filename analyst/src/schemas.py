@@ -1,4 +1,3 @@
-import enum
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -10,10 +9,6 @@ class TopArticlesResponse(BaseModel):
     author_id: str
     username: str
     title: str
-    views: int
-    likes: int
-    shares: int
-    comments: int
 
 class ActiveUsersResponse(BaseModel):
     user_id: str
